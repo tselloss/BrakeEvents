@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "378673690986",
+    "project_id": "mapapplication-f1519",
+    "storage_bucket": "mapapplication-f1519.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:378673690986:android:b29abc83c5d95cf820cd13",
+        "android_client_info": {
+          "package_name": "com.example.mapapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfzzkBC4KU7fy4bH9g6q7p0_dsmco4mSk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
