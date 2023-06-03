@@ -18,31 +18,45 @@ public class PermissionCheck {
     }
 
     public boolean checkPermissions() {
-        return ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED;
+        String[] requiredPermissions = {
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+        };
+
+        for (String permission : requiredPermissions) {
+            if (ContextCompat.checkSelfPermission(activity, permission)
+                    != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public void requestPermissions() {
-        ActivityCompat.requestPermissions(
-                activity,
-                new String[] {
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                },
-                PERMISSIONS_REQUEST_CODE
-        );
+        String[] requiredPermissions = {
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+        };
+
+        ActivityCompat.requestPermissions(activity, requiredPermissions, PERMISSIONS_REQUEST_CODE);
     }
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
-            if (!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                    && grantResults[1] == PackageManager.PERMISSION_GRANTED)) {
+            boolean allPermissionsGranted = true;
+
+            for (int grantResult : grantResults) {
+                if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                    allPermissionsGranted = false;
+                    break;
+                }
+            }
+
+            if (!allPermissionsGranted) {
                 // If permissions are not granted, show a message to the user.
                 // Consider closing the app or disabling certain functionality.
-            }
-            else {
+            } else {
                 // Call the class that will start location updates
             }
         }
