@@ -26,6 +26,7 @@ public class LocationTracker implements LocationListener {
     private static final long MIN_TIME = 300;
     private static final float MIN_DISTANCE = 0;
     private float previousAverageTravelDistance = 0;
+    private final int MAX_SPEED= 80;
 
 
     @SuppressLint("MissingPermission")

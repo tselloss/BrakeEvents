@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     FirebaseAuth firebaseAuth;
     private LocationTracker locationTracker;
     private DatabaseReference databaseRef;
+    private PotholeTracker potholeTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(@NonNull GoogleMap googleMap) {
         myMap = googleMap;
         locationTracker = new LocationTracker(this, myMap);
+        potholeTracker = new PotholeTracker(this, myMap);
         // Load all the brake locations from the firebase and add them to the map
         databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
