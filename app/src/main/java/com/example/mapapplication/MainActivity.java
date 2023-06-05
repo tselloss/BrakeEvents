@@ -166,11 +166,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         databaseRef.child("speedLimit_locations").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Integer speedLimit = dataSnapshot.getValue(Integer.class);
-                if (speedLimit != null) {
-                    // Use the speed limit value as needed
-                    // For example, you can store it in a variable for later use
-                    int limit = speedLimit;
+                List<LatLng> speedLimitList = new ArrayList<>();
+                for (DataSnapshot locationSnapshot : dataSnapshot.getChildren()) {
+                    Double latitude = locationSnapshot.child("latitude").getValue(Double.class);
+                    Double longitude = locationSnapshot.child("longitude").getValue(Double.class);
+                    if (latitude != null && longitude != null) {
+                        LatLng latLng = new LatLng(latitude, longitude);
+                        speedLimitList.add(latLng);
+                        myMap.addMarker(new MarkerOptions()
+                                .position(latLng)
+                                .title("SpeedLimits")
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+                    }
                 }
             }
 

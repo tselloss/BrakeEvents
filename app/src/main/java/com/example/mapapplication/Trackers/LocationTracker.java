@@ -46,7 +46,8 @@ public class LocationTracker implements LocationListener {
     @Override
     public void onLocationChanged(@NonNull Location location) {
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
+        //Zoom to the current position
+       // myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
         if (previousLocation != null) {
             float distance = previousLocation.distanceTo(location); // distance in meters
             long timeDifference = location.getTime() - previousLocation.getTime(); // time difference in milliseconds
