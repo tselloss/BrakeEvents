@@ -9,6 +9,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.mapapplication.Trackers.LocationTracker;
+import com.example.mapapplication.Trackers.PotholeTracker;
+import com.example.mapapplication.Trackers.SpeedLimitTracker;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -33,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LocationTracker locationTracker;
     private DatabaseReference databaseRef;
     private PotholeTracker potholeTracker;
+    private SpeedLimitTracker speedLimitTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +45,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         emailText = findViewById(R.id.editTextTextEmailAddress);
         passwordText = findViewById(R.id.editTextTextPassword);
         firebaseAuth = FirebaseAuth.getInstance();
-        databaseRef = FirebaseDatabase.getInstance().getReference("brakes");
+        databaseRef = FirebaseDatabase.getInstance().getReference().child("brake_locations");
+        databaseRef = FirebaseDatabase.getInstance().getReference().child("pothole_locations");
+        databaseRef = FirebaseDatabase.getInstance().getReference().child("speedLimit_locations");
     }
 
     private void initializeMap() {
@@ -67,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         showMessage("Success", "User created successfully!");
-                        definePermitionsAndMap();
+                        definePermissionsAndMap();
                     } else {
                         showMessage("Error", task.getException().getLocalizedMessage());
                     }
@@ -79,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         showMessage("Success", "User signed in successfully!");
-                        definePermitionsAndMap();
+                        definePermissionsAndMap();
                     } else {
                         showMessage("Error", task.getException().getLocalizedMessage());
                     }
@@ -89,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     void showMessage(String title, String message) {
         new AlertDialog.Builder(this).setTitle(title).setMessage(message).setCancelable(true).show();
     }
-    public void definePermitionsAndMap() {
+    public void definePermissionsAndMap() {
         setContentView(R.layout.activity_main_maps);
         permissionCheck = new PermissionCheck(this);
         if (!permissionCheck.checkPermissions()) {
@@ -105,8 +111,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         myMap = googleMap;
         locationTracker = new LocationTracker(this, myMap);
         potholeTracker = new PotholeTracker(this, myMap);
-        // Load all the brake locations from the firebase and add them to the map
-        databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        speedLimitTracker= new SpeedLimitTracker(this,myMap);
+        // Load brake locations from Firebase and add them to the map
+        databaseRef.child("brake_locations").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<LatLng> brakeLocations = new ArrayList<>();
@@ -116,12 +123,54 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     if (latitude != null && longitude != null) {
                         LatLng latLng = new LatLng(latitude, longitude);
                         brakeLocations.add(latLng);
-                        // Markers when is added from firebase would be HUE_RED
                         myMap.addMarker(new MarkerOptions()
                                 .position(latLng)
                                 .title("Unexpected brake point")
                                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
                     }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle cancellation if needed
+            }
+        });
+
+        // Load pothole locations from Firebase and add them to the map
+        databaseRef.child("pothole_locations").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<LatLng> potholeLocations = new ArrayList<>();
+                for (DataSnapshot locationSnapshot : dataSnapshot.getChildren()) {
+                    Double latitude = locationSnapshot.child("latitude").getValue(Double.class);
+                    Double longitude = locationSnapshot.child("longitude").getValue(Double.class);
+                    if (latitude != null && longitude != null) {
+                        LatLng latLng = new LatLng(latitude, longitude);
+                        potholeLocations.add(latLng);
+                        myMap.addMarker(new MarkerOptions()
+                                .position(latLng)
+                                .title("Pothole")
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle cancellation if needed
+            }
+        });
+
+        // Retrieve speed limit from Firebase
+        databaseRef.child("speedLimit_locations").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Integer speedLimit = dataSnapshot.getValue(Integer.class);
+                if (speedLimit != null) {
+                    // Use the speed limit value as needed
+                    // For example, you can store it in a variable for later use
+                    int limit = speedLimit;
                 }
             }
 
