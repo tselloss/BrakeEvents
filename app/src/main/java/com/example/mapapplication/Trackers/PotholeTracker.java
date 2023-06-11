@@ -41,6 +41,10 @@ public class PotholeTracker extends AppCompatActivity implements LocationListene
     private final double ACCELERATION_THRESHOLD = 25.0;
     private boolean isSensorChanged= false;
 
+    private float defaultXValue = (float) -90.0;
+    private float defaultYValue = (float) 0.0;
+    private float defaultZValue = (float) -103.0;
+
     @SuppressLint("MissingPermission")
     public PotholeTracker(@NonNull Context context, @NonNull GoogleMap map) {
         this.myMap = map;
@@ -106,7 +110,7 @@ public class PotholeTracker extends AppCompatActivity implements LocationListene
             ((TextView) findViewById(R.id.textvalues1)).setText("X :" + xValue + " Y :" + yValue + "Z:" + zValue);
             if (!isSensorChanged) {
                 // Check if any of the sensor values exceed the default threshold
-                if (xValue > -90 || yValue > 0 || zValue > -103) {
+                if (xValue > defaultXValue || yValue > defaultYValue || zValue > defaultZValue) {
                     isSensorChanged = true; // Set the flag to indicate sensor change
                 }
             } else {
